@@ -1,39 +1,13 @@
-package MT::Plugin::TaggingHelper;
+# $Id$
+
+package TaggingHelper::Plugin;
 
 use strict;
 use MT::Template::Context;
 use MT::Plugin;
-@MT::Plugin::TaggingHelper::ISA = qw(MT::Plugin);
-
-use vars qw($PLUGIN_NAME $VERSION);
-$PLUGIN_NAME = 'TaggingHelper';
-$VERSION = '0.4';
-
-use MT;
-my $plugin = new MT::Plugin::TaggingHelper({
-    name => $PLUGIN_NAME,
-    version => $VERSION,
-    description => "<MT_TRANS phrase='description of TaggingHelper'>",
-    doc_link => 'http://blog.aklaswad.com/mtplugins/tagginghelper/',
-    author_name => 'akira sawada',
-    author_link => 'http://blog.aklaswad.com/',
-    l10n_class => 'TaggingHelper::L10N',
-});
-
-MT->add_plugin($plugin);
-
-my $mt_version = MT->version_number;
-if ($mt_version =~ /^5/){
-    MT->add_callback('template_param.edit_entry', 9, $plugin, \&hdlr_mt5_param);
-}
-elsif ($mt_version =~ /^4/){
-    MT->add_callback('template_param.edit_entry', 9, $plugin, \&hdlr_mt4_param);
-}
-else {
-    MT->add_callback('MT::App::CMS::AppTemplateSource.edit_entry', 9, $plugin, \&hdlr_mt3_source);
-}
 
 sub _build_html {
+    my $plugin = shift;
     my $html = <<'EOT';
 <style type="text/css">
 
@@ -185,21 +159,12 @@ TaggingHelper.action = function (evt) {
 
 </script>
 <div id="tagging_helper_container">
-    <span id="taghelper_abc" onclick="TaggingHelper.open('abc')" class="taghelper_command"><MT_TRANS phrase="alphabetical"></span>
-    <span id="taghelper_count" onclick="TaggingHelper.open('count')" class="taghelper_command"><MT_TRANS phrase="frequency"></span>
-    <span id="taghelper_match" onclick="TaggingHelper.open('match')" class="taghelper_command"><MT_TRANS phrase="match in body"></span>
-    <span id="taghelper_close" onclick="TaggingHelper.close()" class="taghelper_command"><MT_TRANS phrase="close"></span>
+    <span id="taghelper_abc" onclick="TaggingHelper.open('abc')" class="taghelper_command"><__trans_section component="TaggingHelper"><__trans phrase="alphabetical"></__trans_section></span>
+    <span id="taghelper_count" onclick="TaggingHelper.open('count')" class="taghelper_command"><__trans_section component="TaggingHelper"><__trans phrase="frequency"></__trans_section></span>
+    <span id="taghelper_match" onclick="TaggingHelper.open('match')" class="taghelper_command"><__trans_section component="TaggingHelper"><__trans phrase="match in body"></__trans_section></span>
+    <span id="taghelper_close" onclick="TaggingHelper.close()" class="taghelper_command"><__trans phrase="close"></span>
 <div id="tagging_helper_block" style="display: none;"></div>
 </div>
-EOT
-
-    my $getbody3 = <<'EOT';
-TaggingHelper.getBody = function () {
-    // for MT 3.3
-    return document.getElementById('text').value
-         + '\n'
-         + document.getElementById('text_more').value;
-}
 EOT
 
     my $getbody4 = <<'EOT';
@@ -216,21 +181,8 @@ TaggingHelper.getBody = function () {
 }
 EOT
 
-    my $getbody = ($mt_version =~ /^[45]/) ? $getbody4 : $getbody3;
-    $html =~ s/__getbody/$getbody/;
-    return $plugin->translate_templatized($html);
-}
-
-sub hdlr_mt3_source {
-    my ($eh, $app, $tmpl) = @_;
-    my $html = _build_html(); 
-    my $pattern = quotemeta(<<'EOT');
-<!--[if lte IE 6.5]><div id="iehack"><![endif]-->
-<div id="tags_completion" class="full-width"></div>
-<!--[if lte IE 6.5]></div><![endif]-->
-</div>
-EOT
-    $$tmpl =~ s!($pattern)!$1$html!;
+    $html =~ s/__getbody/$getbody4/;
+    return $html;
 }
 
 sub hdlr_mt4_param {
@@ -253,11 +205,19 @@ sub hdlr_mt5_param {
         or die 'cannot find tags field in the screen.';
     $host_node->innerHTML($host_node->innerHTML . $html);
     my $blog_id = $app->param('blog_id') or return 1;
+
+    my %terms;
+    my $plugin = MT->component("TaggingHelper");
+    my $load_blogs = $plugin->get_config_value('load_blogs','blog:'.$blog_id) || '0';
+    if ($load_blogs == 0) {
+        $terms{blog_id}      = $blog_id;
+    }
+
+    $terms{object_datasource} = 'entry';
+
     my $entry_class = 'entry';
     my $iter = MT->model('objecttag')->count_group_by(
-        {   blog_id           => $blog_id,
-            object_datasource => 'entry',
-        },
+        \%terms,
         {   sort      => 'cnt',
             direction => 'ascend',
             group     => ['tag_id'],
@@ -283,5 +243,13 @@ sub hdlr_mt5_param {
     1;
 }
 
-1;
+sub doLog {
+    my ($msg) = @_; 
+    return unless defined($msg);
+    require MT::Log;
+    my $log = MT::Log->new;
+    $log->message($msg) ;
+    $log->save or die $log->errstr;
+}
 
+1;

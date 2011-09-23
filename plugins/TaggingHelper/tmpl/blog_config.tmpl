@@ -1,0 +1,6 @@
+<mtapp:setting id="load_blogs" label="<__trans phrase="Tags Load From:">">
+    <input type="radio" name="load_blogs" value="1"<mt:if name="load_blogs" eq="1"> checked="checked"</mt:if> />
+    &nbsp;<__trans phrase="All">&nbsp;
+    <input type="radio" name="load_blogs" value="0"<mt:unless name="load_blogs"> checked="checked"</mt:unless> />
+    &nbsp;<__trans phrase="Blog">&nbsp;
+</mtapp:setting>

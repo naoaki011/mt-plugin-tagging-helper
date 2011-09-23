@@ -1,0 +1,25 @@
+name: Tagging Helper
+id: TaggingHelper
+description: <__trans phrase="description of TaggingHelper">
+author_name: <__trans phrase="akira sawada">
+author_link: http://blog.aklaswad.com/
+doc_link: http://blog.aklaswad.com/mtplugins/tagginghelper.html
+l10n_class: TaggingHelper::L10N
+version: 1.05
+
+blog_config_template: tmpl/blog_config.tmpl
+settings:
+  load_blogs:
+    default: 0
+    scope: blog
+  entry_tags:
+    default: 1
+    scope: blog
+  page_tags:
+    default: 0
+    scope: blog
+  asset_tags:
+    default: 0
+    scope: blog
+callbacks:
+  template_param.edit_entry: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
