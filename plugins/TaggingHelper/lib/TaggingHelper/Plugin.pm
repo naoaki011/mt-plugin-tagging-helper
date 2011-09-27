@@ -210,10 +210,37 @@ sub hdlr_mt5_param {
     my $plugin = MT->component("TaggingHelper");
     my $load_blogs = $plugin->get_config_value('load_blogs','blog:'.$blog_id) || '0';
     if ($load_blogs == 0) {
-        $terms{blog_id}      = $blog_id;
+        $terms{'blog_id'}      = $blog_id;
+    }
+    elsif ($load_blogs == 2) {
+        require MT::Blog;
+        my $blog = MT::Blog->load( $blog_id );
+        my @blog_ids;
+        my @blogs = MT::Blog->load({ parent_id => $blog->parent_id }) || '';
+        foreach my $sibling (@blogs) {
+            push(@blog_ids, $sibling->id);
+        }
+        if( @blog_ids ){
+            $terms{'blog_id'} = \@blog_ids;
+        }
     }
 
-    $terms{object_datasource} = 'entry';
+    my $page_tags = $plugin->get_config_value('page_tags','blog:'.$blog_id) || '0';
+    my $entry_class;
+#    if ($page_tags == 1) {
+#        $entry_class = [ 'entry', 'page' ];
+#    }
+#    else {
+        $entry_class = 'entry';
+#    }
+
+    my $asset_tags = $plugin->get_config_value('asset_tags','blog:'.$blog_id) || '0';
+    if ($asset_tags == 1) {
+        $terms{'object_datasource'} = [ 'entry', 'asset' ];
+    }
+    else {
+        $terms{'object_datasource'} = [ 'entry' ];
+    }
 
     my $entry_class = 'entry';
     my $iter = MT->model('objecttag')->count_group_by(
@@ -223,6 +250,7 @@ sub hdlr_mt5_param {
             group     => ['tag_id'],
             join      => MT::Entry->join_on(
                 undef,
+                {
                 {   class => $entry_class,
                     id    => \'= objecttag_object_id',
                 }
