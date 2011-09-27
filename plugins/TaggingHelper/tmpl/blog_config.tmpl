@@ -6,3 +6,7 @@
     <input type="radio" name="load_blogs" value="0"<mt:unless name="load_blogs"> checked="checked"</mt:unless> />
     &nbsp;<__trans phrase="Blog">&nbsp;
 </mtapp:setting>
+<mtapp:setting id="datasources" label="<__trans phrase="Tags Load By:">">
+    <input type="checkbox" name="asset_tags" value="1"<mt:if name="asset_tags"> checked="checked"</mt:if> />
+    &nbsp;<__trans phrase="Asset">&nbsp;
+</mtapp:setting>

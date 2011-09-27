@@ -251,7 +251,7 @@ sub hdlr_mt5_param {
             join      => MT::Entry->join_on(
                 undef,
                 {
-                {   class => $entry_class,
+                    class => $entry_class,
                     id    => \'= objecttag_object_id',
                 }
             ),
