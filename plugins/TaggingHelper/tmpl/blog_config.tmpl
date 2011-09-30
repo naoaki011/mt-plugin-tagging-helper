@@ -7,6 +7,8 @@
     &nbsp;<__trans phrase="Blog">&nbsp;
 </mtapp:setting>
 <mtapp:setting id="datasources" label="<__trans phrase="Tags Load By:">">
+    <input type="checkbox" name="page_tags" value="1"<mt:if name="page_tags"> checked="checked"</mt:if> />
+    &nbsp;<__trans phrase="Page">&nbsp;
     <input type="checkbox" name="asset_tags" value="1"<mt:if name="asset_tags"> checked="checked"</mt:if> />
     &nbsp;<__trans phrase="Asset">&nbsp;
 </mtapp:setting>

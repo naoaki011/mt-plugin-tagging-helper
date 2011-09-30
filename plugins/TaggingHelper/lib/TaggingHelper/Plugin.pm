@@ -227,12 +227,12 @@ sub hdlr_mt5_param {
 
     my $page_tags = $plugin->get_config_value('page_tags','blog:'.$blog_id) || '0';
     my $entry_class;
-#    if ($page_tags == 1) {
-#        $entry_class = [ 'entry', 'page' ];
-#    }
-#    else {
+    if ($page_tags == 1) {
+        $entry_class = [ 'entry', 'page' ];
+    }
+    else {
         $entry_class = 'entry';
-#    }
+    }
 
     my $asset_tags = $plugin->get_config_value('asset_tags','blog:'.$blog_id) || '0';
     if ($asset_tags == 1) {
@@ -242,7 +242,6 @@ sub hdlr_mt5_param {
         $terms{'object_datasource'} = [ 'entry' ];
     }
 
-    my $entry_class = 'entry';
     my $iter = MT->model('objecttag')->count_group_by(
         \%terms,
         {   sort      => 'cnt',
@@ -269,15 +268,6 @@ sub hdlr_mt5_param {
         </script>
     };
     1;
-}
-
-sub doLog {
-    my ($msg) = @_; 
-    return unless defined($msg);
-    require MT::Log;
-    my $log = MT::Log->new;
-    $log->message($msg) ;
-    $log->save or die $log->errstr;
 }
 
 1;
