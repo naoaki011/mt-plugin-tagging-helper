@@ -200,17 +200,12 @@ sub hdlr_mt5_param {
     my ($eh, $app, $param, $tmpl) = @_;
     my $blog_id = $app->param('blog_id') or return 1;
     my $plugin = MT->component("TaggingHelper");
-    return 1 if (($app->param('_type') eq 'entry')&&($plugin->get_config_value('disable_entry','blog:'.$blog_id) || '0'));
-    return 1 if (($app->param('_type') eq 'page')&&($plugin->get_config_value('disable_page','blog:'.$blog_id) || '0'));
+    return 1 if (($app->param('_type') eq 'entry')&&(($plugin->get_config_value('enable_entry','blog:'.$blog_id) || '1') != 1));
+    return 1 if (($app->param('_type') eq 'page')&&(($plugin->get_config_value('enable_page','blog:'.$blog_id) || '1') != 1));
+#    return 1 if (($app->param('_type') eq 'asset')&&(($plugin->get_config_value('enable_asset','blog:'.$blog_id) || '0') != 1));
 
-    my $html = _build_html();
-    die 'something wrong...'
-        unless UNIVERSAL::isa($tmpl, 'MT::Template');
-    my $host_node = $tmpl->getElementById('tags')
-        or die 'cannot find tags field in the screen.';
-    $host_node->innerHTML($host_node->innerHTML . $html);
+    my (%terms, $entry_class);
 
-    my %terms;
     my $load_blogs = $plugin->get_config_value('load_blogs','blog:'.$blog_id) || '0';
     if ($load_blogs == 0) {
         $terms{'blog_id'}      = $blog_id;
@@ -228,22 +223,70 @@ sub hdlr_mt5_param {
         }
     }
 
-    my $page_tags = $plugin->get_config_value('page_tags','blog:'.$blog_id) || '0';
-    my $entry_class;
+    my ($entry_tags, $page_tags, $asset_tags);
+
+    if ($app->param('_type') eq 'entry') {
+        if ($plugin->get_config_value('enable_entry','blog:'.$blog_id) || '1') {
+            $entry_tags = $plugin->get_config_value('entry_tags_for_entry','blog:'.$blog_id) || '1';
+            $page_tags = $plugin->get_config_value('page_tags_for_entry','blog:'.$blog_id) || '0';
+            $asset_tags = $plugin->get_config_value('asset_tags_for_entry','blog:'.$blog_id) || '0';
+        }
+    }
+    elsif ($app->param('_type') eq 'page') {
+        if ($plugin->get_config_value('enable_page','blog:'.$blog_id) || '1') {
+            $entry_tags = $plugin->get_config_value('entry_tags_for_page','blog:'.$blog_id) || '0';
+            $page_tags = $plugin->get_config_value('page_tags_for_page','blog:'.$blog_id) || '1';
+            $asset_tags = $plugin->get_config_value('asset_tags_for_page','blog:'.$blog_id) || '0';
+        }
+    }
+#    elsif ($app->param('_type') eq 'asset')&&($app->param('__mode') eq 'view') {
+#        if ($plugin->get_config_value('enable_asset','blog:'.$blog_id) || '0') {
+#            $entry_tags = $plugin->get_config_value('entry_tags_for_asset','blog:'.$blog_id) || '0';
+#            $page_tags = $plugin->get_config_value('page_tags_for_asset','blog:'.$blog_id) || '0';
+#            $asset_tags = $plugin->get_config_value('asset_tags_for_asset','blog:'.$blog_id) || '1';
+#        }
+#    }
+
+    if ($entry_tags == 1) {
     if ($page_tags == 1) {
         $entry_class = [ 'entry', 'page' ];
     }
     else {
         $entry_class = 'entry';
     }
-
-    my $asset_tags = $plugin->get_config_value('asset_tags','blog:'.$blog_id) || '0';
     if ($asset_tags == 1) {
         $terms{'object_datasource'} = [ 'entry', 'asset' ];
     }
     else {
         $terms{'object_datasource'} = [ 'entry' ];
     }
+    }
+    else {
+        if ($page_tags == 1) {
+            $entry_class = 'page';
+            if ($asset_tags == 1) {
+                $terms{'object_datasource'} = [ 'entry', 'asset' ];
+            }
+            else {
+                $terms{'object_datasource'} = [ 'entry' ];
+            }
+        }
+        else {
+            if ($asset_tags == 1) {
+                $terms{'object_datasource'} = [ 'asset' ];
+            }
+            else {
+                return 1;
+            }
+        }
+    }
+
+    my $html = _build_html();
+    die 'something wrong...'
+        unless UNIVERSAL::isa($tmpl, 'MT::Template');
+    my $host_node = $tmpl->getElementById('tags')
+        or die 'cannot find tags field in the screen.';
+    $host_node->innerHTML($host_node->innerHTML . $html);
 
     my $iter = MT->model('objecttag')->count_group_by(
         \%terms,

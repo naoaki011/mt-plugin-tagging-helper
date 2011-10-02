@@ -12,24 +12,42 @@ settings:
   load_blogs:
     default: 0
     scope: blog
-#  entry_tags:
+  enable_entry:
+    default: 1
+    scope: blog
+  entry_tags_for_entry:
+    default: 1
+    scope: blog
+  page_tags_for_entry:
+    default: 0
+    scope: blog
+  asset_tags_for_entry:
+    default: 0
+    scope: blog
+  enable_page:
+    default: 1
+    scope: blog
+  entry_tags_for_page:
+    default: 0
+    scope: blog
+  page_tags_for_page:
+    default: 1
+    scope: blog
+  asset_tags_for_page:
+    default: 0
+    scope: blog
+#  enable_asset:
+#    default: 0
+#    scope: blog
+#  entry_tags_for_asset:
+#    default: 0
+#    scope: blog
+#  page_tags_for_asset:
+#    default: 0
+#    scope: blog
+#  asset_tags_for_asset:
 #    default: 1
 #    scope: blog
-  page_tags:
-    default: 0
-    scope: blog
-  asset_tags:
-    default: 0
-    scope: blog
-  disable_entry:
-    default: 0
-    scope: blog
-  disable_page:
-    default: 0
-    scope: blog
-  enable_asset:
-    default: 0
-    scope: blog
 callbacks:
   template_param.edit_entry: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
 #  template_param.edit_asset: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
