@@ -15,7 +15,14 @@ use vars qw( %Lexicon );
     'match in body' => '本文に一致',
     'Tags Load From:' => 'タグの読み込み元:',
     'Tags Load By:' => 'タグの種類:',
+    'Tags Load Except For:' => 'タグ候補を表示させない:',
+    'Tags Load For:' => 'タグ候補を表示する:',
     'All' => '全体',
+    'Sibling' => 'Sibling',
+    'Page Tags' => 'ウェブページのタグ',
+    'Asset Tags' => 'アイテムのタグ',
+    'Except Entry' => 'ブログ記事で表示させない',
+    'Except Page' => 'ウェブページで表示させない',
     'akira sawada' => '澤田 哲',
 );
 

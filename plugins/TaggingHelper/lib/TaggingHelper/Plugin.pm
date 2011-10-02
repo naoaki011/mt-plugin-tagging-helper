@@ -198,16 +198,19 @@ sub hdlr_mt4_param {
 
 sub hdlr_mt5_param {
     my ($eh, $app, $param, $tmpl) = @_;
+    my $blog_id = $app->param('blog_id') or return 1;
+    my $plugin = MT->component("TaggingHelper");
+    return 1 if (($app->param('_type') eq 'entry')&&($plugin->get_config_value('disable_entry','blog:'.$blog_id) || '0'));
+    return 1 if (($app->param('_type') eq 'page')&&($plugin->get_config_value('disable_page','blog:'.$blog_id) || '0'));
+
     my $html = _build_html();
     die 'something wrong...'
         unless UNIVERSAL::isa($tmpl, 'MT::Template');
     my $host_node = $tmpl->getElementById('tags')
         or die 'cannot find tags field in the screen.';
     $host_node->innerHTML($host_node->innerHTML . $html);
-    my $blog_id = $app->param('blog_id') or return 1;
 
     my %terms;
-    my $plugin = MT->component("TaggingHelper");
     my $load_blogs = $plugin->get_config_value('load_blogs','blog:'.$blog_id) || '0';
     if ($load_blogs == 0) {
         $terms{'blog_id'}      = $blog_id;

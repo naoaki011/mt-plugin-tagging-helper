@@ -21,15 +21,15 @@ settings:
   asset_tags:
     default: 0
     scope: blog
-#  enable_entry:
-#    default: 1
-#    scope: blog
-#  enable_page:
-#    default: 1
-#    scope: blog
-#  enable_asset:
-#    default: 0
-#    scope: blog
+  disable_entry:
+    default: 0
+    scope: blog
+  disable_page:
+    default: 0
+    scope: blog
+  enable_asset:
+    default: 0
+    scope: blog
 callbacks:
   template_param.edit_entry: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
 #  template_param.edit_asset: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
