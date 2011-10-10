@@ -49,5 +49,5 @@ settings:
 #    default: 1
 #    scope: blog
 callbacks:
-  template_param.edit_entry: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
-#  template_param.edit_asset: $TaggingHelper::TaggingHelper::Plugin::hdlr_mt5_param
+  template_param.edit_entry: $TaggingHelper::TaggingHelper::Plugin::_cb_param_edit
+#  template_param.edit_asset: $TaggingHelper::TaggingHelper::Plugin::_cb_param_edit
