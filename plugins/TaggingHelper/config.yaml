@@ -5,7 +5,7 @@ author_name: <__trans phrase="akira sawada">
 author_link: http://blog.aklaswad.com/
 doc_link: http://blog.aklaswad.com/mtplugins/tagginghelper.html
 l10n_class: TaggingHelper::L10N
-version: 1.05
+version: 1.06
 
 blog_config_template: tmpl/blog_config.tmpl
 settings:
