@@ -167,7 +167,9 @@ TaggingHelper.action = function (evt) {
 </div>
 EOT
 
-    my $getbody4 = <<'EOT';
+    my $mt_version = MT->version_number;
+    if ($mt_version < 5.2) {
+        my $getbody4 = <<'EOT';
 TaggingHelper.getBody = function () {
     // for MT 4
     // get both current editting field and hidden input fields.
@@ -180,8 +182,17 @@ TaggingHelper.getBody = function () {
          + document.getElementById('editor-input-extended').value;
 }
 EOT
-
-    $html =~ s/__getbody/$getbody4/;
+        $html =~ s/__getbody/$getbody4/;
+    } else {
+        my $getbody6 = <<'EOT';
+TaggingHelper.getBody = function () {
+    return document.getElementById('editor-input-content').value
+         + '\n'
+         + document.getElementById('editor-input-extended').value;
+}
+EOT
+        $html =~ s/__getbody/$getbody6/;
+    }
     return $html;
 }
 
